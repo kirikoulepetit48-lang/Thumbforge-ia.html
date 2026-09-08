@@ -49,7 +49,7 @@ document.getElementById('gen').onclick=async()=>{
  const btn=document.getElementById('gen'); btn.textContent='⏳ Génération...'; btn.disabled=true;
 
  // Appel ton backend pour prompt + paywall
- const r=await fetch('https://ton-backend-render.onrender.com/api/thumb', {
+ const r=await fetch('https://viralforge-ai-backend-html.onrender.com/', {
   method:'POST', headers:{'Content-Type':'application/json'},
   body:JSON.stringify({title, style, code:localStorage.getItem('vip')||''})
  }).then(r=>r.json());
