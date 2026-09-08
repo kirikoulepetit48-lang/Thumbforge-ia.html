@@ -10,9 +10,10 @@ input{width:100%;padding:16px;border-radius:12px;border:1px solid #ff2e97;backgr
 .style-btn{padding:12px 16px;border-radius:999px;border:1px solid #333;background:#1a1a27;color:#fff;cursor:pointer}
 .style-btn.active{background:linear-gradient(90deg,#ff2e97,#ff7a18);border-color:#ff2e97}
 .gen{width:100%;padding:18px;border:0;border-radius:16px;background:linear-gradient(90deg,#ff2e97,#ff7a18);color:#fff;font-weight:800;font-size:18px;cursor:pointer}
-.thumbs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
-.thumb{border-radius:12px;overflow:hidden;position:relative;border:2px solid #333;cursor:pointer}
-.thumb img{width:100%;aspect-ratio:16/9;object-fit:cover}
+.thumbs{display:grid;grid-template-columns:1fr;gap:12px}
+@media(min-width:600px){.thumbs{grid-template-columns:1fr 1fr 1fr}}
+.thumb{border-radius:12px;overflow:hidden;position:relative;border:2px solid #333;cursor:pointer;background:#000;min-height:180px}
+.thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
 .thumb-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:8px;font-weight:800;font-size:12px}
 </style>
 </head>
@@ -31,7 +32,7 @@ input{width:100%;padding:16px;border-radius:12px;border:1px solid #ff2e97;backgr
 </div>
 
 <div id="result" class="card" style="display:none">
-<h3>🔥 TES MINIATURES (clique pour agrandir)</h3>
+<h3>🔥 TES MINIATURES</h3>
 <div class="thumbs" id="thumbs"></div>
 <button class="gen" style="margin-top:16px" onclick="location.reload()">🔄 Recommencer</button>
 </div>
@@ -48,24 +49,22 @@ document.getElementById('gen').onclick=async()=>{
  const title=document.getElementById('title').value.trim();
  if(!title) return alert('Mets un titre frérot!');
  const btn=document.getElementById('gen'); btn.textContent='⏳ Génération...'; btn.disabled=true;
-
- try {
+ try{
   const r=await fetch(`${BACKEND}/api/thumb`, {
    method:'POST', headers:{'Content-Type':'application/json'},
    body:JSON.stringify({title, style, code:localStorage.getItem('vip')||''})
   }).then(r=>r.json());
-
-  if(r.needPayment){ alert('Plus d’essais gratuits! Paye via Fondeka frérot 🙏'); btn.textContent='✨ Générer 3 Miniatures'; btn.disabled=false; return; }
-
+  if(r.needPayment){ alert('Plus d’essais! Paye via Fondeka 🙏'); btn.textContent='✨ Générer 3 Miniatures'; btn.disabled=false; return; }
   const container=document.getElementById('thumbs'); container.innerHTML='';
   r.images.forEach((url)=>{
    const div=document.createElement('div'); div.className='thumb';
-   div.innerHTML=`<img src="${url}" crossorigin="anonymous"><div class="thumb-label">${title.slice(0,22)}...</div>`;
+   div.innerHTML=`<img src="${url}" loading="lazy" onerror="this.src='https://picsum.photos/seed/${Math.random()}/1280/720'"><div class="thumb-label">${title.slice(0,30)}</div>`;
    div.onclick=()=>window.open(url,'_blank');
    container.appendChild(div);
   });
   document.getElementById('result').style.display='block';
- } catch(e){ alert('Erreur backend: '+e.message); }
+  document.getElementById('result').scrollIntoView({behavior:'smooth'});
+ }catch(e){ alert('Erreur: '+e.message); }
  btn.textContent='✨ Générer 3 Miniatures'; btn.disabled=false;
 }
 </script>
