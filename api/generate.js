@@ -9,8 +9,7 @@ export default async function handler(req, res) {
     if (!HF_TOKEN) return res.status(500).json({error: 'HF_TOKEN manquant sur Vercel'});
 
     const response = await fetch(
-      "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell",
-      {
+      "https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0"
         method: "POST",
         headers: {
           "Authorization": `Bearer ${HF_TOKEN}`,
