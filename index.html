@@ -1,63 +1,81 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>ThumbForge AI</title>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>THUMB FORGE V13 VERCEL FINAL</title>
 <style>
-body{margin:0;font-family:system-ui;background:#0a0a0f;color:#fff;padding:16px}
-.card{background:#15151f;border:1px solid #ff2e97;border-radius:20px;padding:20px;margin-bottom:16px}
-input{width:100%;padding:16px;border-radius:12px;border:1px solid #ff2e97;background:#0a0a0f;color:#fff;font-size:16px;box-sizing:border-box}
-.style-btn{padding:12px 16px;border-radius:999px;border:1px solid #333;background:#1a1a27;color:#fff;cursor:pointer}
-.style-btn.active{background:linear-gradient(90deg,#ff2e97,#ff7a18);border-color:#ff2e97}
-.gen{width:100%;padding:18px;border:0;border-radius:16px;background:linear-gradient(90deg,#ff2e97,#ff7a18);color:#fff;font-weight:800;font-size:18px;cursor:pointer}
-.thumbs{display:grid;grid-template-columns:1fr;gap:12px}
-@media(min-width:600px){.thumbs{grid-template-columns:1fr 1fr 1fr}}
-.thumb{border-radius:12px;overflow:hidden;position:relative;border:2px solid #333;cursor:pointer;background:#000}
-.thumb img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block}
-.thumb-label{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.9));padding:8px;font-weight:800;font-size:12px}
-</style>
-</head>
-<body>
-<h1 style="background:linear-gradient(90deg,#ff2e97,#ff7a18);-webkit-background-clip:text;-webkit-text-fill-color:transparent">✨ ThumbForge AI</h1>
-<div class="card">
-<input id="title" placeholder="Ex: COMMENT DEVENIR RICHE EN 7 JOURS">
-<div style="display:flex;gap:8px;margin:16px 0;flex-wrap:wrap">
-<button class="style-btn active" data-style="shocked">🔥 Shocked</button>
-<button class="style-btn" data-style="bold">📈 Bold Viral</button>
-<button class="style-btn" data-style="meme">😱 Meme</button>
+*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:system-ui;display:flex;flex-direction:column;height:100vh}
+.h{padding:12px;background:#0a0a0a;display:flex;justify-content:space-between;border-bottom:2px solid #0f0;align-items:center}
+.t{color:#FFD700;font-weight:900;font-size:12px}.ok{color:#0f0;border:1px solid #0f0;padding:5px 12px;border-radius:20px;font-size:10px}
+.c{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
+.m{padding:12px;border-radius:16px;max-width:96%}.b{background:#111;border:1px solid #222;align-self:center;width:100%}.u{background:#7c3aed;align-self:flex-end}
+.m img{width:100%;border-radius:12px;margin-top:8px}
+.bar{padding:10px;background:#0a0a0a;display:flex;gap:8px;border-top:1px solid #222}
+.bar input{flex:1;background:#1e1e1e;border:1px solid #333;color:#fff;padding:13px 18px;border-radius:30px;outline:none}
+.send{width:48px;height:48px;border-radius:50%;border:0;background:#FFD700;font-weight:900}.plus{width:48px;height:48px;border-radius:50%;border:0;background:#222;color:#fff}
+.dl{width:100%;padding:14px;background:#FFD700;color:#000;border:0;border-radius:12px;font-weight:900;margin-top:8px}
+.load{border:3px solid #222;border-top:3px solid #FFD700;border-radius:50%;width:28px;height:28px;animation:spin 1s linear infinite;display:inline-block}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+</style></head><body>
+<div class="h"><div class="t">✦ V13 VERCEL - HF PURE</div><div class="ok">● VERCEL PROXY</div></div>
+<div id="chat" class="c">
+<div class="m b"><b>✅ V13 VERCEL - FIN DU FAILED TO FETCH</b><br><br>
+Format: <b>Texte<< comment devenir riche >></b><br>
+1. Clique + pour ta photo<br>
+2. Tape Texte<< ton idée >><br>
+3. Génération HF FLUX 8K en 15-30s via Vercel<br><br>
+Ex: Texte<< mindset millionnaire >>, Texte<< motivation extreme >></div>
 </div>
-<button class="gen" id="gen">✨ Générer 3 Miniatures</button>
-</div>
-<div id="result" class="card" style="display:none">
-<h3>🔥 TES MINIATURES</h3>
-<div class="thumbs" id="thumbs"></div>
-<button class="gen" style="margin-top:16px" onclick="location.reload()">🔄 Recommencer</button>
-</div>
+<div class="bar"><input id="fi" type="file" accept="image/*" hidden><button class="plus" onclick="fi.click()">+</button><input id="ti" placeholder="Texte<< comment devenir riche >>"><button class="send" onclick="gen()">➤</button></div>
 <script>
-const BACKEND="https://viralforge-ai-backend-html.onrender.com";
-let style='shocked';
-document.querySelectorAll('.style-btn').forEach(b=>b.onclick=()=>{
- document.querySelectorAll('.style-btn').forEach(x=>x.classList.remove('active'));
- b.classList.add('active'); style=b.dataset.style;
-});
-document.getElementById('gen').onclick=async()=>{
- const title=document.getElementById('title').value.trim();
- if(!title) return alert('Mets un titre frérot!');
- const btn=document.getElementById('gen'); btn.textContent='⏳ Génération (10s)...'; btn.disabled=true;
- try{
-  const r=await fetch(`${BACKEND}/api/thumb`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title,style,code:localStorage.getItem('vip')||''})}).then(r=>r.json());
-  if(r.needPayment){alert('Plus d’essais! Paye via Fondeka 🙏');btn.textContent='✨ Générer';btn.disabled=false;return;}
-  const container=document.getElementById('thumbs'); container.innerHTML='';
-  r.images.forEach((url)=>{
-   const div=document.createElement('div'); div.className='thumb';
-   div.innerHTML=`<img src="${url}" loading="eager"><div class="thumb-label">${title.slice(0,30)}</div>`;
-   div.onclick=()=>window.open(url,'_blank');
-   container.appendChild(div);
-  });
-  document.getElementById('result').style.display='block';
- }catch(e){alert('Erreur: '+e.message);}
- btn.textContent='✨ Générer 3 Miniatures'; btn.disabled=false;
+let userImg=null;
+fi.onchange=e=>{
+  let r=new FileReader();
+  r.onload=v=>{userImg=v.target.result;add(`<img src="${userImg}"><small>Photo prête</small>`,'u')};
+  r.readAsDataURL(e.target.files[0]);
+};
+function buildPrompt(t){
+  let base="ultra realistic photo, same exact person, blue hoodie with black white pattern on shoulder, 8K, ultra detailed skin, cinematic volumetric lighting, sharp focus";
+  let low=t.toLowerCase();
+  if(low.includes('riche')||low.includes('argent')||low.includes('dollar')||low.includes('million')||low.includes('fortune')){
+    return `${base}, night city background with bokeh lights, golden god rays from above, many realistic 100 US dollar bills falling around him, gold dust particles, dramatic atmosphere, text at bottom "${t.toUpperCase()}" bold white Impact font with very thick black outline, viral youtube thumbnail`;
+  }
+  return `${base}, cinematic background matching theme "${low}", dramatic lighting, text at bottom "${t.toUpperCase()}" bold white Impact font with thick black outline, viral youtube thumbnail`;
 }
-</script>
-</body>
-</html>
+async function gen(){
+  let raw=ti.value.trim();
+  if(!raw){alert('Ecris Texte<<...>>');return}
+  if(!userImg){alert('Ajoute photo avec +');return}
+  let m=raw.match(/Texte<<\s*(.+?)\s*>>/i);
+  if(!m){alert('Format: Texte<< ton texte >>');return}
+  let clean=m[1];
+  ti.value='';
+  add(raw,'u');
+  let prompt=buildPrompt(clean);
+  let id=Date.now();
+  add(`<div id="l${id}"><span class="load"></span> Vercel → Hugging Face FLUX...<br>Prompt: ${prompt.slice(0,110)}...<br>⏳ 15-30s (1ère fois 40s)</div>`,'b');
+  try{
+    const res=await fetch("/api/generate",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({prompt})
+    });
+    if(!res.ok){
+      let err=await res.text();
+      throw new Error(err.slice(0,500));
+    }
+    let blob=await res.blob();
+    let imgUrl=URL.createObjectURL(blob);
+    document.getElementById(`l${id}`)?.remove();
+    add(`<img src="${imgUrl}"><div style="color:#0f0;font-size:11px;margin:6px 0">✅ GENERE PAR HF FLUX.1-SCHNELL VIA VERCEL - 8K</div><button class="dl" onclick="let a=document.createElement('a');a.href='${imgUrl}';a.download='THUMB-FORGE-${Date.now()}.png';a.click()">⬇️ TELECHARGER HD 1080x1920</button>`,'b');
+  }catch(e){
+    let el=document.getElementById(`l${id}`);
+    if(el) el.innerHTML=`❌ Erreur: ${e.message.slice(0,400)}<br><br>Si c'est la 1ère fois attends 30s et reessaie, HF charge le modèle.`;
+  }
+}
+function add(h,t){
+  let d=document.createElement('div');
+  d.className='m '+(t==='u'?'u':'b');
+  d.innerHTML=h;
+  let c=document.getElementById('chat');
+  c.appendChild(d);
+  c.scrollTop=999999;
+}
+</script></body></html>
