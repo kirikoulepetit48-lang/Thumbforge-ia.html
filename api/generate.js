@@ -3,7 +3,7 @@ export default async function handler(req, res) {
   try {
     const { prompt } = req.body;
     const HF_TOKEN = process.env.HF_TOKEN;
-    const r = await fetch("https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0", {
+    const r = await fetch("https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell", {
       method: "POST",
       headers: { "Authorization": `Bearer ${HF_TOKEN}`, "Content-Type": "application/json" },
       body: JSON.stringify({ inputs: prompt })
