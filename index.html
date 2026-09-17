@@ -1,107 +1,26 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THUMB-FORGE IA</title>
-<script src="https://cdn.tailwindcss.com"></script>
-</head>
-<body class="bg-black text-white min-h-screen flex flex-col items-center p-4">
-
-<h1 class="text-2xl font-black mt-4 mb-6 tracking-widest text-purple-500">THUMB-FORGE IA</h1>
-
-<!-- UPLOAD -->
-<div class="w-full max-w-md bg-zinc-900 rounded-2xl p-3 border-2 border-purple-600">
-  <img id="preview" class="w-full rounded-xl hidden object-cover max-h-80">
-  <label id="uploadLabel" class="block w-full text-center py-12 border-2 border-dashed border-zinc-700 rounded-xl cursor-pointer">
-    <span class="text-4xl">📸</span><p class="mt-2 text-zinc-400">Photo prête - Clique pour changer</p>
-    <input id="photoInput" type="file" accept="image/*" class="hidden">
-  </label>
+<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>THUMB-FORGE V2</title><script src="https://cdn.tailwindcss.com"></script></head>
+<body class="bg-black text-white min-h-screen p-4 flex flex-col items-center">
+<h1 class="text-2xl font-black text-purple-500 mt-2">THUMB-FORGE IA</h1><p class="text-zinc-500 text-xs mb-4">Générateur de miniatures virales</p>
+<div class="w-full max-w-md bg-zinc-900 p-3 rounded-2xl border border-zinc-800">
+<input id="text" class="w-full bg-zinc-800 rounded-full py-3 px-5 outline-none" placeholder="Ex: mindset millionnaire">
+<div class="grid grid-cols-2 gap-2 mt-3">
+<button onclick="setStyle('luxury millionaire, suit, money')" class="bg-yellow-500/20 text-yellow-400 py-2 rounded-full text-sm">💰 LUXE</button>
+<button onclick="setStyle('aggressive, red neon, powerful')" class="bg-red-500/20 text-red-400 py-2 rounded-full text-sm">🔥 AGRESSIF</button>
+<button onclick="setStyle('clean minimal, mr beast style')" class="bg-blue-500/20 text-blue-400 py-2 rounded-full text-sm">😲 MR BEAST</button>
+<button onclick="setStyle('dark ghetto, Lubumbashi street')" class="bg-zinc-700 text-white py-2 rounded-full text-sm">🌍 GHETTO</button>
 </div>
-
-<!-- TEXTE -->
-<div class="w-full max-w-md mt-4">
-  <input id="textInput" type="text" placeholder="Texte<< mindset millionnaire >>"
-  class="w-full bg-violet-600 placeholder-white/70 text-white font-bold py-4 px-5 rounded-full outline-none">
-  <button id="genBtn" class="w-full mt-4 bg-white text-black font-black py-4 rounded-full text-lg">✨ GENERER THUMBNAIL</button>
+<button id="gen" class="w-full mt-4 bg-white text-black font-black py-4 rounded-full">✨ GENERER</button>
 </div>
-
-<!-- RESULTAT -->
-<div id="resultBox" class="w-full max-w-md mt-6 hidden">
-  <div class="bg-zinc-900 rounded-2xl p-3 border border-zinc-800">
-    <img id="resultImage" class="w-full rounded-xl">
-    <p class="text-green-400 text-xs font-bold mt-3">✅ GENERE PAR FLUX + POLLINATIONS - 8K</p>
-    <button id="downloadBtn" class="w-full mt-3 bg-yellow-400 text-black font-black py-4 rounded-xl">⬇️ TELECHARGER HD 1080x1920</button>
-  </div>
-</div>
-
-<p id="status" class="mt-4 text-zinc-500 text-sm"></p>
-
+<div id="res" class="w-full max-w-md mt-4 hidden"><img id="img" class="w-full rounded-xl"><button id="dl" class="w-full mt-3 bg-yellow-400 text-black font-black py-4 rounded-xl">⬇️ TELECHARGER HD</button></div>
 <script>
-const photoInput = document.getElementById('photoInput');
-const preview = document.getElementById('preview');
-const uploadLabel = document.getElementById('uploadLabel');
-const textInput = document.getElementById('textInput');
-const genBtn = document.getElementById('genBtn');
-const resultBox = document.getElementById('resultBox');
-const resultImage = document.getElementById('resultImage');
-const statusEl = document.getElementById('status');
-
-photoInput.addEventListener('change', e => {
-  const file = e.target.files[0];
-  if(!file) return;
-  preview.src = URL.createObjectURL(file);
-  preview.classList.remove('hidden');
-  uploadLabel.classList.add('hidden');
-});
-
-genBtn.addEventListener('click', async () => {
-  const prompt = textInput.value.trim();
-  if(!prompt) return alert('Ecris un texte! Ex: mindset millionnaire');
-  genBtn.disabled = true;
-  genBtn.textContent = '⏳ GENERATION 5s...';
-  statusEl.textContent = 'Génération en cours...';
-  try {
-    const res = await fetch('/api/generate', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt })
-    });
-    const data = await res.json();
-    if(!res.ok) throw new Error(data.error);
-    resultImage.src = data.image;
-    resultBox.classList.remove('hidden');
-    statusEl.textContent = 'Prêt!';
-    window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
-  } catch(err) {
-    alert('Erreur: ' + err.message);
-    statusEl.textContent = err.message;
-  } finally {
-    genBtn.disabled = false;
-    genBtn.textContent = '✨ GENERER THUMBNAIL';
-  }
-});
-
-// FIX ANDROID DOWNLOAD - le plus important
-document.getElementById('downloadBtn').addEventListener('click', async () => {
-  const src = resultImage.src;
-  if(!src) return;
-  try {
-    const res = await fetch(src);
-    const blob = await res.blob();
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `THUMB-FORGE-${Date.now()}.jpg`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-  } catch(e) {
-    // fallback: ouvre l'image
-    window.open(src, '_blank');
-  }
-});
-</script>
-</body>
-</html>
+let currentStyle='luxury youtube thumbnail';
+function setStyle(s){currentStyle=s; document.getElementById('text').placeholder=s}
+document.getElementById('gen').onclick=async()=>{
+ const prompt=document.getElementById('text').value; if(!prompt) return alert('Ecris un texte');
+ document.getElementById('gen').textContent='⏳...'; const r=await fetch('/api/generate',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,style:currentStyle})}); const d=await r.json();
+ document.getElementById('img').src=d.image; document.getElementById('res').classList.remove('hidden'); document.getElementById('gen').textContent='✨ GENERER';
+}
+document.getElementById('dl').onclick=async()=>{
+ const src=document.getElementById('img').src; const res=await fetch(src); const blob=await res.blob(); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url; a.download=`THUMB-${Date.now()}.jpg`; a.click(); URL.revokeObjectURL(url);
+}
+</script></body></html>
