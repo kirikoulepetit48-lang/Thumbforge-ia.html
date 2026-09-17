@@ -1,81 +1,107 @@
-<!DOCTYPE html><html lang="fr"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>THUMB FORGE V13 VERCEL FINAL</title>
-<style>
-*{box-sizing:border-box}body{margin:0;background:#000;color:#fff;font-family:system-ui;display:flex;flex-direction:column;height:100vh}
-.h{padding:12px;background:#0a0a0a;display:flex;justify-content:space-between;border-bottom:2px solid #0f0;align-items:center}
-.t{color:#FFD700;font-weight:900;font-size:12px}.ok{color:#0f0;border:1px solid #0f0;padding:5px 12px;border-radius:20px;font-size:10px}
-.c{flex:1;overflow:auto;padding:12px;display:flex;flex-direction:column;gap:12px}
-.m{padding:12px;border-radius:16px;max-width:96%}.b{background:#111;border:1px solid #222;align-self:center;width:100%}.u{background:#7c3aed;align-self:flex-end}
-.m img{width:100%;border-radius:12px;margin-top:8px}
-.bar{padding:10px;background:#0a0a0a;display:flex;gap:8px;border-top:1px solid #222}
-.bar input{flex:1;background:#1e1e1e;border:1px solid #333;color:#fff;padding:13px 18px;border-radius:30px;outline:none}
-.send{width:48px;height:48px;border-radius:50%;border:0;background:#FFD700;font-weight:900}.plus{width:48px;height:48px;border-radius:50%;border:0;background:#222;color:#fff}
-.dl{width:100%;padding:14px;background:#FFD700;color:#000;border:0;border-radius:12px;font-weight:900;margin-top:8px}
-.load{border:3px solid #222;border-top:3px solid #FFD700;border-radius:50%;width:28px;height:28px;animation:spin 1s linear infinite;display:inline-block}
-@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
-</style></head><body>
-<div class="h"><div class="t">✦ V13 VERCEL - HF PURE</div><div class="ok">● VERCEL PROXY</div></div>
-<div id="chat" class="c">
-<div class="m b"><b>✅ V13 VERCEL - FIN DU FAILED TO FETCH</b><br><br>
-Format: <b>Texte<< comment devenir riche >></b><br>
-1. Clique + pour ta photo<br>
-2. Tape Texte<< ton idée >><br>
-3. Génération HF FLUX 8K en 15-30s via Vercel<br><br>
-Ex: Texte<< mindset millionnaire >>, Texte<< motivation extreme >></div>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THUMB-FORGE IA</title>
+<script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-black text-white min-h-screen flex flex-col items-center p-4">
+
+<h1 class="text-2xl font-black mt-4 mb-6 tracking-widest text-purple-500">THUMB-FORGE IA</h1>
+
+<!-- UPLOAD -->
+<div class="w-full max-w-md bg-zinc-900 rounded-2xl p-3 border-2 border-purple-600">
+  <img id="preview" class="w-full rounded-xl hidden object-cover max-h-80">
+  <label id="uploadLabel" class="block w-full text-center py-12 border-2 border-dashed border-zinc-700 rounded-xl cursor-pointer">
+    <span class="text-4xl">📸</span><p class="mt-2 text-zinc-400">Photo prête - Clique pour changer</p>
+    <input id="photoInput" type="file" accept="image/*" class="hidden">
+  </label>
 </div>
-<div class="bar"><input id="fi" type="file" accept="image/*" hidden><button class="plus" onclick="fi.click()">+</button><input id="ti" placeholder="Texte<< comment devenir riche >>"><button class="send" onclick="gen()">➤</button></div>
+
+<!-- TEXTE -->
+<div class="w-full max-w-md mt-4">
+  <input id="textInput" type="text" placeholder="Texte<< mindset millionnaire >>"
+  class="w-full bg-violet-600 placeholder-white/70 text-white font-bold py-4 px-5 rounded-full outline-none">
+  <button id="genBtn" class="w-full mt-4 bg-white text-black font-black py-4 rounded-full text-lg">✨ GENERER THUMBNAIL</button>
+</div>
+
+<!-- RESULTAT -->
+<div id="resultBox" class="w-full max-w-md mt-6 hidden">
+  <div class="bg-zinc-900 rounded-2xl p-3 border border-zinc-800">
+    <img id="resultImage" class="w-full rounded-xl">
+    <p class="text-green-400 text-xs font-bold mt-3">✅ GENERE PAR FLUX + POLLINATIONS - 8K</p>
+    <button id="downloadBtn" class="w-full mt-3 bg-yellow-400 text-black font-black py-4 rounded-xl">⬇️ TELECHARGER HD 1080x1920</button>
+  </div>
+</div>
+
+<p id="status" class="mt-4 text-zinc-500 text-sm"></p>
+
 <script>
-let userImg=null;
-fi.onchange=e=>{
-  let r=new FileReader();
-  r.onload=v=>{userImg=v.target.result;add(`<img src="${userImg}"><small>Photo prête</small>`,'u')};
-  r.readAsDataURL(e.target.files[0]);
-};
-function buildPrompt(t){
-  let base="ultra realistic photo, same exact person, blue hoodie with black white pattern on shoulder, 8K, ultra detailed skin, cinematic volumetric lighting, sharp focus";
-  let low=t.toLowerCase();
-  if(low.includes('riche')||low.includes('argent')||low.includes('dollar')||low.includes('million')||low.includes('fortune')){
-    return `${base}, night city background with bokeh lights, golden god rays from above, many realistic 100 US dollar bills falling around him, gold dust particles, dramatic atmosphere, text at bottom "${t.toUpperCase()}" bold white Impact font with very thick black outline, viral youtube thumbnail`;
-  }
-  return `${base}, cinematic background matching theme "${low}", dramatic lighting, text at bottom "${t.toUpperCase()}" bold white Impact font with thick black outline, viral youtube thumbnail`;
-}
-async function gen(){
-  let raw=ti.value.trim();
-  if(!raw){alert('Ecris Texte<<...>>');return}
-  if(!userImg){alert('Ajoute photo avec +');return}
-  let m=raw.match(/Texte<<\s*(.+?)\s*>>/i);
-  if(!m){alert('Format: Texte<< ton texte >>');return}
-  let clean=m[1];
-  ti.value='';
-  add(raw,'u');
-  let prompt=buildPrompt(clean);
-  let id=Date.now();
-  add(`<div id="l${id}"><span class="load"></span> Vercel → Hugging Face FLUX...<br>Prompt: ${prompt.slice(0,110)}...<br>⏳ 15-30s (1ère fois 40s)</div>`,'b');
-  try{
-    const res=await fetch("/api/generate",{
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({prompt})
+const photoInput = document.getElementById('photoInput');
+const preview = document.getElementById('preview');
+const uploadLabel = document.getElementById('uploadLabel');
+const textInput = document.getElementById('textInput');
+const genBtn = document.getElementById('genBtn');
+const resultBox = document.getElementById('resultBox');
+const resultImage = document.getElementById('resultImage');
+const statusEl = document.getElementById('status');
+
+photoInput.addEventListener('change', e => {
+  const file = e.target.files[0];
+  if(!file) return;
+  preview.src = URL.createObjectURL(file);
+  preview.classList.remove('hidden');
+  uploadLabel.classList.add('hidden');
+});
+
+genBtn.addEventListener('click', async () => {
+  const prompt = textInput.value.trim();
+  if(!prompt) return alert('Ecris un texte! Ex: mindset millionnaire');
+  genBtn.disabled = true;
+  genBtn.textContent = '⏳ GENERATION 5s...';
+  statusEl.textContent = 'Génération en cours...';
+  try {
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
     });
-    if(!res.ok){
-      let err=await res.text();
-      throw new Error(err.slice(0,500));
-    }
-    let blob=await res.blob();
-    let imgUrl=URL.createObjectURL(blob);
-    document.getElementById(`l${id}`)?.remove();
-    add(`<img src="${imgUrl}"><div style="color:#0f0;font-size:11px;margin:6px 0">✅ GENERE PAR HF FLUX.1-SCHNELL VIA VERCEL - 8K</div><button class="dl" onclick="let a=document.createElement('a');a.href='${imgUrl}';a.download='THUMB-FORGE-${Date.now()}.png';a.click()">⬇️ TELECHARGER HD 1080x1920</button>`,'b');
-  }catch(e){
-    let el=document.getElementById(`l${id}`);
-    if(el) el.innerHTML=`❌ Erreur: ${e.message.slice(0,400)}<br><br>Si c'est la 1ère fois attends 30s et reessaie, HF charge le modèle.`;
+    const data = await res.json();
+    if(!res.ok) throw new Error(data.error);
+    resultImage.src = data.image;
+    resultBox.classList.remove('hidden');
+    statusEl.textContent = 'Prêt!';
+    window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'});
+  } catch(err) {
+    alert('Erreur: ' + err.message);
+    statusEl.textContent = err.message;
+  } finally {
+    genBtn.disabled = false;
+    genBtn.textContent = '✨ GENERER THUMBNAIL';
   }
-}
-function add(h,t){
-  let d=document.createElement('div');
-  d.className='m '+(t==='u'?'u':'b');
-  d.innerHTML=h;
-  let c=document.getElementById('chat');
-  c.appendChild(d);
-  c.scrollTop=999999;
-}
-</script></body></html>
+});
+
+// FIX ANDROID DOWNLOAD - le plus important
+document.getElementById('downloadBtn').addEventListener('click', async () => {
+  const src = resultImage.src;
+  if(!src) return;
+  try {
+    const res = await fetch(src);
+    const blob = await res.blob();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `THUMB-FORGE-${Date.now()}.jpg`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  } catch(e) {
+    // fallback: ouvre l'image
+    window.open(src, '_blank');
+  }
+});
+</script>
+</body>
+</html>
